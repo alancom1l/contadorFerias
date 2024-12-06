@@ -1,0 +1,88 @@
+<!DOCTYPE html>
+<html lang="pt-br">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Contador Regressivo</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            height: 100vh;
+            background-color: #f0f8ff;
+            margin: 0;
+        }
+        #contador {
+            text-align: center;
+            font-size: 1.5rem;
+            margin-top: 20px;
+        }
+    </style>
+</head>
+<body>
+    <div>
+        <label for="dataInput">Selecione a data das suas férias:</label>
+        <input type="date" id="dataInput" />
+        <button onclick="iniciarContador()">Iniciar Contagem</button>
+    </div>
+    <div id="contador">
+        <p>Tempo até as férias:</p>
+        <p id="timer">Selecione uma data válida acima.</p>
+    </div>
+    <script>
+        const timerElement = document.getElementById("timer");
+        let intervalo; // Variável global para o intervalo
+
+        function iniciarContador() {
+            const dataInput = document.getElementById("dataInput").value;
+            if (!dataInput) {
+                timerElement.textContent = "Por favor, selecione uma data.";
+                return;
+            }
+
+            const dataSelecionada = new Date(dataInput + "T00:00:00");
+            const agora = new Date();
+
+            // Verifica se a data selecionada é válida (maior que hoje + 1 dia)
+            const amanha = new Date(agora.getFullYear(), agora.getMonth(), agora.getDate() + 1);
+            if (dataSelecionada <= amanha) {
+                timerElement.textContent = "Escolha uma data superior ao dia de amanhã.";
+                return;
+            }
+
+            // Limpa o intervalo anterior antes de iniciar um novo
+            clearInterval(intervalo);
+
+            // Define o contador
+            intervalo = setInterval(() => {
+                const agora = new Date();
+                const diferenca = dataSelecionada - agora;
+
+                if (diferenca <= 0) {
+                    timerElement.textContent = "Já estamos nas férias!";
+                    clearInterval(intervalo);
+                    return;
+                }
+
+                const dias = Math.floor(diferenca / (1000 * 60 * 60 * 24));
+                const horas = Math.floor((diferenca % (1000 * 60 * 60 * 24)) / (1000 * 60 * 60));
+                const minutos = Math.floor((diferenca % (1000 * 60 * 60)) / (1000 * 60));
+                const segundos = Math.floor((diferenca % (1000 * 60)) / 1000);
+
+                timerElement.textContent = `${dias}d ${horas}h ${minutos}m ${segundos}s`;
+            }, 1000);
+
+            timerElement.textContent = "Carregando contador...";
+        }
+
+        // Configura o input para aceitar datas mínimas
+        const dataInput = document.getElementById("dataInput");
+        const hoje = new Date();
+        const dataMinima = new Date(hoje.getFullYear(), hoje.getMonth(), hoje.getDate() + 1);
+        dataInput.min = dataMinima.toISOString().split("T")[0];
+    </script>
+</body>
+</html>
